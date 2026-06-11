@@ -1,0 +1,22 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hotel-lobby",
+      "description": "Modern hotel lobby",
+      "imageUrl": "https://picsum.photos/seed/hostup1/1200/800",
+      "imageHint": "hotel lobby"
+    },
+    {
+      "id": "luxury-room",
+      "description": "Luxury hotel room interior",
+      "imageUrl": "https://picsum.photos/seed/hostup2/800/600",
+      "imageHint": "hotel room"
+    },
+    {
+      "id": "staff-avatar",
+      "description": "Professional staff portrait",
+      "imageUrl": "https://picsum.photos/seed/staff1/200/200",
+      "imageHint": "professional person"
+    }
+  ]
+}
