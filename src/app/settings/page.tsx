@@ -19,7 +19,8 @@ import {
   Users,
   BarChart3,
   Globe,
-  Monitor
+  Monitor,
+  Zap
 } from "lucide-react"
 
 export default function SettingsPage() {
