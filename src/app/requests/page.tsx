@@ -15,7 +15,10 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  Users
+  Users,
+  Search,
+  Filter,
+  Zap
 } from "lucide-react"
 import { aiPoweredRequestTriage } from "@/ai/flows/ai-powered-request-triage-flow"
 import { 
@@ -74,68 +77,66 @@ export default function ServiceRequestsPage() {
 
   return (
     <PortalLayout>
-      <div className="flex flex-col gap-8">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-headline font-bold tracking-tight">Service Requests</h1>
-            <p className="text-muted-foreground">Manage guest needs with AI-powered triage support.</p>
+            <h1 className="text-2xl font-bold tracking-tight">Active Queue</h1>
+            <p className="text-sm text-muted-foreground">Manage guest demands with real-time AI assistance.</p>
           </div>
           
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Create New Request
+              <Button className="h-9 text-xs font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+                <Plus className="mr-2 h-3.5 w-3.5" />
+                New Request
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] rounded-2xl border-border/50 shadow-2xl">
               <DialogHeader>
-                <DialogTitle>New Service Request</DialogTitle>
-                <DialogDescription>
-                  Enter the request details. AI will help categorize and extract key info.
+                <DialogTitle className="text-lg font-bold">New Service Request</DialogTitle>
+                <DialogDescription className="text-xs">
+                  Describe the guest's need. Our AI will handle categorization and details.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-6 py-4">
+              <div className="grid gap-5 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="room">Room Number</Label>
-                  <Input id="room" placeholder="e.g. 302" />
+                  <Label htmlFor="room" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Room Reference</Label>
+                  <Input id="room" placeholder="e.g. 302" className="h-9 text-xs border-border/50 bg-secondary/30" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="description">What does the guest need?</Label>
+                  <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Request Context</Label>
                   <div className="relative">
                     <Textarea 
                       id="description" 
-                      placeholder="e.g. The guest mentioned that the AC is making a weird rattling noise and it's getting hot."
-                      className="min-h-[100px] pr-10"
+                      placeholder="e.g. Guest mentioned AC is making a rattling noise..."
+                      className="min-h-[120px] text-xs pr-10 border-border/50 bg-secondary/30 rounded-xl"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
                     <Button 
                       size="icon" 
                       variant="ghost" 
-                      className="absolute right-2 bottom-2 h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+                      className="absolute right-2 bottom-2 h-7 w-7 text-primary hover:text-primary hover:bg-primary/10 rounded-lg"
                       onClick={handleTriage}
                       disabled={isTriaging || !description}
                     >
-                      {isTriaging ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      {isTriaging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                     </Button>
                   </div>
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Sparkles className="h-3 w-3" /> AI Triage enabled
-                  </p>
                 </div>
 
                 {triageResult && (
-                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-primary uppercase">AI Suggested Category</span>
-                      <Badge variant="secondary" className="bg-primary text-white hover:bg-primary">
+                      <span className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5">
+                        <Sparkles className="h-3 w-3" /> AI Triage Suggestion
+                      </span>
+                      <Badge variant="secondary" className="bg-primary text-white text-[9px] font-bold h-5 px-2">
                         {triageResult.category}
                       </Badge>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-xs font-bold text-primary uppercase">Extracted Details</span>
-                      <p className="text-sm text-slate-700 leading-relaxed">
+                      <p className="text-xs text-foreground/80 leading-relaxed font-medium">
                         {triageResult.details}
                       </p>
                     </div>
@@ -143,67 +144,75 @@ export default function ServiceRequestsPage() {
                 )}
 
                 <div className="grid gap-2">
-                  <Label htmlFor="staff">Assign Staff</Label>
+                  <Label htmlFor="staff" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Assign Agent</Label>
                   <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select staff member" />
+                    <SelectTrigger className="h-9 text-xs border-border/50 bg-secondary/30">
+                      <SelectValue placeholder="Choose staff member" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="rahul">Rahul K. (Maintenance)</SelectItem>
-                      <SelectItem value="anita">Anita S. (Housekeeping)</SelectItem>
-                      <SelectItem value="meena">Meena R. (Guest Services)</SelectItem>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="rahul" className="text-xs font-medium">Rahul K. (Maintenance)</SelectItem>
+                      <SelectItem value="anita" className="text-xs font-medium">Anita S. (Housekeeping)</SelectItem>
+                      <SelectItem value="meena" className="text-xs font-medium">Meena R. (Guest Services)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreateRequest}>Create Request</Button>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button variant="outline" size="sm" onClick={() => setOpen(false)} className="rounded-lg text-xs font-bold h-9">Cancel</Button>
+                <Button size="sm" onClick={handleCreateRequest} className="rounded-lg text-xs font-bold h-9 px-6">Submit Ticket</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
 
         <div className="grid gap-6">
-          <Card className="border-none shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
-              <CardTitle className="text-lg font-headline">Active Queue</CardTitle>
+          <Card className="border-border/50 shadow-sm bg-card/40 overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-border/30 pb-4">
+              <div className="flex items-center gap-2">
+                <div className="relative w-64 hidden md:block">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input placeholder="Filter requests..." className="pl-9 h-8 text-xs border-border/50 bg-secondary/30" />
+                </div>
+              </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">Filter</Button>
-                <Button variant="outline" size="sm">Sort</Button>
+                <Button variant="outline" size="sm" className="h-8 text-[10px] font-bold border-border/50 bg-background/50">
+                  <Filter className="mr-1.5 h-3 w-3" /> Sort
+                </Button>
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="divide-y">
+              <div className="divide-y divide-border/30">
                 {requests.map((req) => (
-                  <div key={req.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-secondary/20 transition-colors">
+                  <div key={req.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-secondary/20 transition-all group">
                     <div className="flex items-start gap-4">
-                      <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary font-bold shadow-sm shrink-0">
+                      <div className="h-11 w-11 flex items-center justify-center rounded-xl bg-background text-primary font-bold text-xs shadow-sm border border-border/50 shrink-0 group-hover:scale-105 transition-transform">
                         {req.room}
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-lg">{req.type}</h4>
-                          <span className="text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">#{req.id}</span>
+                          <h4 className="font-bold text-sm tracking-tight">{req.type}</h4>
+                          <span className="text-[9px] text-muted-foreground font-black bg-muted px-1.5 py-0.5 rounded-sm uppercase tracking-tighter">#{req.id}</span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {req.staff}</span>
-                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {req.time}</span>
+                        <div className="flex items-center gap-4 text-[10px] text-muted-foreground font-medium">
+                          <span className="flex items-center gap-1.5 uppercase tracking-wide"><Users className="h-3 w-3" /> {req.staff}</span>
+                          <span className="flex items-center gap-1.5 uppercase tracking-wide"><Clock className="h-3 w-3" /> {req.time}</span>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge variant={req.status === 'Completed' ? 'default' : 'secondary'} className={
-                        req.status === 'Pending' ? 'bg-red-100 text-red-600 border-red-200' :
-                        req.status === 'In Progress' ? 'bg-orange-100 text-orange-600 border-orange-200' :
-                        'bg-green-100 text-green-600 border-green-200'
-                      }>
-                        {req.status === 'Pending' && <Clock className="h-3 w-3 mr-1" />}
-                        {req.status === 'In Progress' && <Loader2 className="h-3 w-3 mr-1 animate-spin" />}
-                        {req.status === 'Completed' && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                      <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-tight px-3 h-6 flex items-center gap-1.5 border-none shadow-none ${
+                        req.status === 'Pending' ? 'bg-orange-500/10 text-orange-500' :
+                        req.status === 'In Progress' ? 'bg-blue-500/10 text-blue-600' :
+                        'bg-emerald-500/10 text-emerald-600'
+                      }`}>
+                        {req.status === 'Pending' && <Clock className="h-2.5 w-2.5" />}
+                        {req.status === 'In Progress' && <Loader2 className="h-2.5 w-2.5 animate-spin" />}
+                        {req.status === 'Completed' && <CheckCircle2 className="h-2.5 w-2.5" />}
                         {req.status}
                       </Badge>
-                      <Button variant="outline" size="sm">Manage</Button>
+                      <Button variant="secondary" size="sm" className="h-7 text-[10px] font-bold px-4 rounded-lg bg-background border border-border/50 shadow-sm opacity-0 group-hover:opacity-100 transition-all">
+                        Details
+                      </Button>
                     </div>
                   </div>
                 ))}

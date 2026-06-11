@@ -13,7 +13,8 @@ import {
   Bed, 
   DoorOpen,
   WashingMachine,
-  Hammer
+  Hammer,
+  ChevronDown
 } from "lucide-react"
 import { 
   DropdownMenu, 
@@ -23,119 +24,109 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const rooms = [
-  { id: "101", type: "Standard", floor: "1st", status: "Available" },
-  { id: "102", type: "Standard", floor: "1st", status: "Occupied" },
-  { id: "103", type: "Deluxe", floor: "1st", status: "Cleaning" },
-  { id: "201", type: "Deluxe", floor: "2nd", status: "Available" },
-  { id: "202", type: "Suite", floor: "2nd", status: "Occupied" },
-  { id: "203", type: "Suite", floor: "2nd", status: "Maintenance" },
-  { id: "301", type: "Presidential", floor: "3rd", status: "Available" },
-  { id: "302", type: "Deluxe", floor: "3rd", status: "Occupied" },
+  { id: "101", type: "Standard", floor: "1st", status: "Available", lastCleaned: "2h ago" },
+  { id: "102", type: "Standard", floor: "1st", status: "Occupied", checkout: "Tomorrow" },
+  { id: "103", type: "Deluxe", floor: "1st", status: "Cleaning", staff: "Anita S." },
+  { id: "201", type: "Deluxe", floor: "2nd", status: "Available", lastCleaned: "1h ago" },
+  { id: "202", type: "Suite", floor: "2nd", status: "Occupied", checkout: "Today" },
+  { id: "203", type: "Suite", floor: "2nd", status: "Maintenance", issue: "AC" },
+  { id: "301", type: "Presidential", floor: "3rd", status: "Available", lastCleaned: "15m ago" },
+  { id: "302", type: "Deluxe", floor: "3rd", status: "Occupied", checkout: "3 days" },
 ]
 
 export default function RoomsPage() {
-  const getStatusColor = (status: string) => {
+  const getStatusInfo = (status: string) => {
     switch (status) {
-      case "Available": return "bg-green-100 text-green-700 border-green-200"
-      case "Occupied": return "bg-blue-100 text-blue-700 border-blue-200"
-      case "Cleaning": return "bg-orange-100 text-orange-700 border-orange-200"
-      case "Maintenance": return "bg-red-100 text-red-700 border-red-200"
-      default: return "bg-slate-100 text-slate-700"
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Available": return <DoorOpen className="h-4 w-4" />
-      case "Occupied": return <Bed className="h-4 w-4" />
-      case "Cleaning": return <WashingMachine className="h-4 w-4" />
-      case "Maintenance": return <Hammer className="h-4 w-4" />
-      default: return null
+      case "Available": return { color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", icon: <DoorOpen className="h-3 w-3" /> }
+      case "Occupied": return { color: "bg-blue-500/10 text-blue-600 border-blue-500/20", icon: <Bed className="h-3 w-3" /> }
+      case "Cleaning": return { color: "bg-orange-500/10 text-orange-600 border-orange-500/20", icon: <WashingMachine className="h-3 w-3" /> }
+      case "Maintenance": return { color: "bg-red-500/10 text-red-600 border-red-500/20", icon: <Hammer className="h-3 w-3" /> }
+      default: return { color: "bg-slate-500/10 text-slate-600 border-slate-500/20", icon: null }
     }
   }
 
   return (
     <PortalLayout>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-headline font-bold tracking-tight">Room Management</h1>
-            <p className="text-muted-foreground">Monitor room status and manage occupancy efficiently.</p>
+            <h1 className="text-2xl font-bold tracking-tight">Inventory</h1>
+            <p className="text-sm text-muted-foreground">Manage property rooms and live availability status.</p>
           </div>
-          <Button className="w-full sm:w-auto flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add New Room
+          <Button className="w-full sm:w-auto h-9 text-xs font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+            <Plus className="mr-2 h-3.5 w-3.5" />
+            New Room
           </Button>
         </div>
 
-        <Card className="border-none shadow-md">
-          <CardHeader className="border-b bg-muted/20 pb-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <div className="relative w-full md:w-80">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search room number..." className="pl-10" />
-                </div>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary">All Rooms</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary bg-white text-green-600 border-green-200">Available (42)</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary bg-white text-blue-600 border-blue-200">Occupied (94)</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary bg-white text-orange-600 border-orange-200">Cleaning (6)</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary bg-white text-red-600 border-red-200">Maintenance (2)</Badge>
-              </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative flex-1 md:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input placeholder="Find room..." className="pl-9 h-9 text-xs border-border/50 bg-secondary/30" />
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
-              {rooms.map((room) => (
-                <div key={room.id} className="bg-white p-6 hover:bg-secondary/20 transition-colors group">
-                  <div className="flex items-start justify-between mb-4">
+            <Button variant="outline" size="sm" className="h-9 w-9 rounded-md border-border/50">
+              <Filter className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+            {['All', 'Available', 'Occupied', 'Cleaning', 'Maintenance'].map((tab) => (
+              <Badge key={tab} variant={tab === 'All' ? 'default' : 'outline'} className={`cursor-pointer text-[10px] font-bold px-3 py-1 ${tab !== 'All' ? 'border-border/50 hover:bg-secondary' : ''}`}>
+                {tab}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {rooms.map((room) => {
+            const status = getStatusInfo(room.status)
+            return (
+              <Card key={room.id} className="border-border/50 shadow-sm bg-card/40 hover:bg-card transition-all hover:shadow-md group">
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`h-10 w-10 flex items-center justify-center rounded-xl font-bold text-lg shadow-sm ${
-                        room.status === 'Available' ? 'bg-green-50 text-green-600' :
-                        room.status === 'Occupied' ? 'bg-blue-50 text-blue-600' :
-                        room.status === 'Cleaning' ? 'bg-orange-50 text-orange-600' :
-                        'bg-red-50 text-red-600'
+                      <div className={`h-10 w-10 flex items-center justify-center rounded-xl font-bold text-sm shadow-sm border border-border/50 ${
+                        room.status === 'Available' ? 'bg-emerald-500/10 text-emerald-600' :
+                        room.status === 'Occupied' ? 'bg-blue-500/10 text-blue-600' :
+                        room.status === 'Cleaning' ? 'bg-orange-500/10 text-orange-600' :
+                        'bg-red-500/10 text-red-600'
                       }`}>
                         {room.id}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold">{room.type}</p>
-                        <p className="text-xs text-muted-foreground">{room.floor} Floor</p>
+                        <p className="text-xs font-bold leading-none">{room.type}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1 tracking-tight uppercase font-medium">{room.floor} Floor</p>
                       </div>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreVertical className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-all">
+                          <MoreVertical className="h-3.5 w-3.5 text-muted-foreground" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Change Status</DropdownMenuItem>
-                        <DropdownMenuItem>Assign Staff</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Mark Unavailable</DropdownMenuItem>
+                      <DropdownMenuContent align="end" className="rounded-xl shadow-2xl border-border/50">
+                        <DropdownMenuItem className="text-xs">View Details</DropdownMenuItem>
+                        <DropdownMenuItem className="text-xs">Edit Config</DropdownMenuItem>
+                        <DropdownMenuItem className="text-xs text-destructive">Deactivate</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <Badge className={`flex items-center gap-1.5 px-3 py-1 font-medium ${getStatusColor(room.status)}`}>
-                      {getStatusIcon(room.status)}
+                  
+                  <div className="mt-6 flex items-center justify-between">
+                    <Badge className={`flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-black uppercase tracking-tight ${status.color}`}>
+                      {status.icon}
                       {room.status}
                     </Badge>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      {room.status === 'Occupied' ? '2 Nights Left' : 'Ready'}
+                    <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                      {room.status === 'Occupied' ? room.checkout : room.lastCleaned || 'N/A'}
                     </span>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
       </div>
     </PortalLayout>
   )

@@ -13,7 +13,8 @@ import {
   Mail, 
   MoreVertical,
   ShieldCheck,
-  Smartphone
+  Smartphone,
+  Filter
 } from "lucide-react"
 
 const staff = [
@@ -27,65 +28,69 @@ const staff = [
 export default function StaffPage() {
   return (
     <PortalLayout>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-headline font-bold tracking-tight">Staff Directory</h1>
-            <p className="text-muted-foreground">Manage your team, roles, and communication.</p>
+            <h1 className="text-2xl font-bold tracking-tight">Team Hub</h1>
+            <p className="text-sm text-muted-foreground">Manage organizational structure and staff presence.</p>
           </div>
-          <Button className="w-full sm:w-auto flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Staff Member
+          <Button className="h-9 text-xs font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 px-6">
+            <Plus className="mr-2 h-3.5 w-3.5" />
+            Add Member
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search by name or department..." className="pl-10" />
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-md group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input placeholder="Search member..." className="pl-9 h-9 text-xs border-border/50 bg-secondary/30" />
           </div>
-          <Button variant="outline" className="hidden md:flex">Filter Roles</Button>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-bold border-border/50 bg-background/50">
+            <Filter className="mr-1.5 h-3 w-3" /> Filters
+          </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {staff.map((person) => (
-            <Card key={person.name} className="border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden group">
+            <Card key={person.name} className="border-border/50 shadow-sm bg-card/40 hover:bg-card transition-all hover:shadow-md group overflow-hidden">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16 border-2 border-primary/10">
-                      <AvatarImage src={person.img} alt={person.name} />
-                      <AvatarFallback className="bg-primary/5 text-primary font-bold">{person.name[0]}</AvatarFallback>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-14 w-14 rounded-2xl border border-border/50 group-hover:scale-105 transition-transform">
+                      <AvatarImage src={person.img} alt={person.name} className="object-cover" />
+                      <AvatarFallback className="bg-primary/5 text-primary font-bold text-xs">{person.name[0]}</AvatarFallback>
                     </Avatar>
-                    <div>
-                      <CardTitle className="text-xl font-headline">{person.name}</CardTitle>
-                      <CardDescription className="flex items-center gap-1.5 font-medium">
+                    <div className="space-y-0.5">
+                      <CardTitle className="text-sm font-bold tracking-tight">{person.name}</CardTitle>
+                      <CardDescription className="text-[10px] font-bold uppercase text-muted-foreground/70 tracking-tighter">
                         {person.dept} • {person.role}
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge className={`${person.status === 'On Duty' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'} border-none shadow-none`}>
+                  <Badge className={`text-[9px] font-black uppercase px-2 py-0 border-none shadow-none ${
+                    person.status === 'On Duty' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-500/10 text-slate-500'
+                  }`}>
                     {person.status}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <Button variant="secondary" className="w-full flex items-center justify-center gap-2 bg-slate-50 border border-slate-200">
-                    <Phone className="h-4 w-4" />
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="secondary" size="sm" className="h-8 text-[10px] font-bold bg-background border border-border/50 shadow-sm hover:bg-primary/5 transition-all">
+                    <Phone className="h-3 w-3 mr-1.5" />
                     Call
                   </Button>
-                  <Button variant="secondary" className="w-full flex items-center justify-center gap-2 bg-slate-50 border border-slate-200">
-                    <Mail className="h-4 w-4" />
-                    Message
+                  <Button variant="secondary" size="sm" className="h-8 text-[10px] font-bold bg-background border border-border/50 shadow-sm hover:bg-primary/5 transition-all">
+                    <Mail className="h-3 w-3 mr-1.5" />
+                    Mail
                   </Button>
                 </div>
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                   <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                    <Smartphone className="h-3 w-3" /> Mobile App Active
+                <div className="pt-3 border-t border-border/30 flex items-center justify-between">
+                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                    <Smartphone className="h-3 w-3" /> App Active
                    </div>
-                   <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="h-4 w-4" />
+                   <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-all">
+                    <MoreVertical className="h-3.5 w-3.5 text-muted-foreground" />
                    </Button>
                 </div>
               </CardContent>
