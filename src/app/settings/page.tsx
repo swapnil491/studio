@@ -14,7 +14,9 @@ import {
   CreditCard, 
   User,
   Save,
-  Hotel
+  Hotel,
+  Users,
+  BarChart3
 } from "lucide-react"
 
 export default function SettingsPage() {
